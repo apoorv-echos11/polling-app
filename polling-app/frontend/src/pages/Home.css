@@ -1,0 +1,146 @@
+.home-page {
+  padding: 2rem 0;
+}
+
+.hero-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-content {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--echos-dark);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  background: var(--echos-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--echos-text-light);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.hero-actions {
+  margin-bottom: 2rem;
+}
+
+.btn-large {
+  padding: 1.25rem 3rem;
+  font-size: 1.125rem;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--echos-light);
+}
+
+.divider span {
+  position: relative;
+  background: var(--echos-white);
+  padding: 0 1rem;
+  color: var(--echos-text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 1px;
+}
+
+.join-poll-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.input-with-button .input-field {
+  flex: 1;
+}
+
+.input-with-button .btn {
+  white-space: nowrap;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.feature-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px var(--echos-shadow);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  filter: grayscale(30%);
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  color: var(--echos-dark);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.feature-card p {
+  color: var(--echos-text-light);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .btn-large {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+
+  .input-with-button {
+    flex-direction: column;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}

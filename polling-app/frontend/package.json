@@ -1,0 +1,47 @@
+{
+  "name": "echos-polling-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.2",
+    "socket.io-client": "^4.6.1",
+    "chart.js": "^4.3.3",
+    "react-chartjs-2": "^5.2.0",
+    "d3": "^7.8.5",
+    "d3-cloud": "^1.2.7",
+    "framer-motion": "^10.15.0",
+    "react-confetti": "^6.1.0",
+    "axios": "^1.4.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1",
+    "@types/d3": "^7.4.0",
+    "@types/d3-cloud": "^1.2.6"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
