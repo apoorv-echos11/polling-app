@@ -1,0 +1,18 @@
+{
+  "name": "polling-load-test",
+  "version": "1.0.0",
+  "description": "Load testing script for Echos Polling App",
+  "main": "load-test.js",
+  "scripts": {
+    "test": "node load-test.js",
+    "test:50": "node load-test.js --users=50",
+    "test:100": "node load-test.js --users=100",
+    "test:250": "node load-test.js --users=250",
+    "test:500": "node load-test.js --users=500"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.6.1",
+    "uuid": "^9.0.0"
+  }
+}
+

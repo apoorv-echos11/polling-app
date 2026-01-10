@@ -9,9 +9,14 @@ const Header = () => {
           <div className="logo-icon">E</div>
           <span className="logo-text">echos Polling</span>
         </Link>
-        <Link to="/create" className="btn btn-secondary">
-          Create Poll
-        </Link>
+        <div className="header-nav">
+          <Link to="/admin" className="btn btn-outline">
+            🔐 Admin
+          </Link>
+          <Link to="/create" className="btn btn-secondary">
+            + Create Poll
+          </Link>
+        </div>
       </div>
     </header>
   );

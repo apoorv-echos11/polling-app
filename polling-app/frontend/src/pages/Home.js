@@ -16,7 +16,7 @@ const Home = () => {
   return (
     <div className="home-page fade-in">
       <div className="hero-section">
-        <div className="hero-content card">
+        <div className="hero-content card card-light">
           <h1 className="hero-title">
             Real-time Polling Made Simple
           </h1>
@@ -29,7 +29,7 @@ const Home = () => {
               className="btn btn-primary btn-large"
               onClick={() => navigate('/create')}
             >
-              🎯 Create New Poll
+              Create New Poll →
             </button>
           </div>
 
@@ -39,7 +39,7 @@ const Home = () => {
 
           <form onSubmit={handleJoinPoll} className="join-poll-form">
             <div className="input-group">
-              <label className="input-label">Join an Existing Poll</label>
+              <label className="input-label input-label-dark">Join an Existing Poll</label>
               <div className="input-with-button">
                 <input
                   type="text"

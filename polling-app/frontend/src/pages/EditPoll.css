@@ -1,0 +1,290 @@
+.edit-poll-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.edit-poll-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.edit-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--echos-white);
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  color: var(--echos-text-on-dark);
+  font-size: 1rem;
+}
+
+.edit-form {
+  margin-top: 2rem;
+}
+
+/* Questions Section */
+.questions-section {
+  margin-top: 2rem;
+}
+
+.questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Question Card with Drag Support */
+.question-card {
+  background: var(--echos-dark);
+  border: 2px solid var(--echos-dark-lighter);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  cursor: grab;
+}
+
+.question-card:hover {
+  border-color: var(--echos-primary);
+}
+
+.question-card.dragging {
+  opacity: 0.5;
+  border-color: var(--echos-primary);
+  background: rgba(139, 154, 109, 0.1);
+  cursor: grabbing;
+}
+
+.question-card:active {
+  cursor: grabbing;
+}
+
+/* Question Header */
+.question-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--echos-dark-lighter);
+}
+
+.drag-handle {
+  font-size: 1.25rem;
+  color: var(--echos-text-light);
+  cursor: grab;
+  padding: 0.25rem;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.drag-handle:hover {
+  color: var(--echos-primary);
+}
+
+.question-number {
+  font-weight: 700;
+  color: var(--echos-primary);
+  font-size: 1rem;
+}
+
+.votes-badge {
+  padding: 0.25rem 0.5rem;
+  background: rgba(139, 154, 109, 0.2);
+  color: var(--echos-primary);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.reorder-buttons {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.btn-reorder {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--echos-dark-lighter);
+  border: 1px solid var(--echos-dark-lighter);
+  border-radius: 6px;
+  color: var(--echos-text-on-dark);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.btn-reorder:hover:not(:disabled) {
+  background: var(--echos-primary);
+  border-color: var(--echos-primary);
+  color: var(--echos-white);
+}
+
+.btn-reorder:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-remove-question {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #EF4444;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-question:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.1);
+}
+
+/* Poll Type Selector */
+.poll-type-selector.compact {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.poll-type-btn.compact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--echos-dark-lighter);
+  border-radius: 10px;
+  background: var(--echos-dark-card);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.poll-type-btn.compact:hover {
+  border-color: var(--echos-primary);
+}
+
+.poll-type-btn.compact.active {
+  border-color: var(--echos-primary);
+  background: rgba(139, 154, 109, 0.15);
+}
+
+.poll-type-btn.compact .type-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--echos-primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.poll-type-btn.compact .type-title {
+  font-weight: 600;
+  color: var(--echos-white);
+  font-size: 0.9rem;
+}
+
+/* Options */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.option-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.option-input-group .input-field {
+  flex: 1;
+}
+
+.btn-remove-option {
+  padding: 0.5rem 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #EF4444;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-option:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--echos-dark-lighter);
+}
+
+/* Utility Classes */
+.input-label-small {
+  font-size: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .question-header {
+    flex-wrap: wrap;
+  }
+
+  .reorder-buttons {
+    order: 3;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    margin-left: 0;
+  }
+
+  .poll-type-selector.compact {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+

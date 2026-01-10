@@ -3,8 +3,6 @@ import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import MultipleChoiceResults from '../components/MultipleChoiceResults';
-import OneWordResults from '../components/OneWordResults';
 import Confetti from 'react-confetti';
 import './Poll.css';
 
@@ -14,20 +12,18 @@ const Poll = () => {
   const { pollId } = useParams();
   const [socket, setSocket] = useState(null);
   const [poll, setPoll] = useState(null);
-  const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [hasVoted, setHasVoted] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
-  const [oneWordAnswer, setOneWordAnswer] = useState('');
+  const [answers, setAnswers] = useState({});
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [userId] = useState(() => {
-    // Get or create user ID
-    let id = localStorage.getItem('userId');
+    let id = localStorage.getItem('oderId');
     if (!id) {
       id = uuidv4();
-      localStorage.setItem('userId', id);
+      localStorage.setItem('oderId', id);
     }
     return id;
   });
@@ -52,12 +48,13 @@ const Poll = () => {
     // Listen for poll data
     newSocket.on('poll-data', (pollData) => {
       setPoll(pollData);
+      // Initialize answers object for all questions
+      const initialAnswers = {};
+      pollData.questions.forEach((q, index) => {
+        initialAnswers[index] = '';
+      });
+      setAnswers(initialAnswers);
       setLoading(false);
-    });
-
-    // Listen for results updates
-    newSocket.on('results-update', (resultsData) => {
-      setResults(resultsData);
     });
 
     // Listen for vote success
@@ -66,6 +63,7 @@ const Poll = () => {
       setShowConfetti(true);
       localStorage.setItem(`voted_${pollId}`, 'true');
       setTimeout(() => setShowConfetti(false), 5000);
+      setSubmitting(false);
     });
 
     // Listen for vote errors
@@ -87,8 +85,12 @@ const Poll = () => {
       const response = await axios.get(`${API_URL}/api/polls/${pollId}`);
       setPoll(response.data.poll);
       
-      const resultsResponse = await axios.get(`${API_URL}/api/polls/${pollId}/results`);
-      setResults(resultsResponse.data);
+      // Initialize answers
+      const initialAnswers = {};
+      response.data.poll.questions.forEach((q, index) => {
+        initialAnswers[index] = '';
+      });
+      setAnswers(initialAnswers);
       
       setLoading(false);
     } catch (err) {
@@ -97,33 +99,58 @@ const Poll = () => {
     }
   };
 
-  const handleVote = (e) => {
-    e.preventDefault();
+  const handleAnswerChange = (questionIndex, value) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionIndex]: value
+    }));
+  };
+
+  const handleNext = () => {
+    if (currentQuestion < poll.questions.length - 1) {
+      setCurrentQuestion(curr => curr + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(curr => curr - 1);
+    }
+  };
+
+  const handleSubmit = () => {
     setError('');
 
-    if (poll.type === 'multiple-choice' && !selectedOption) {
-      setError('Please select an option');
-      return;
-    }
+    // Validate all answers
+    for (let i = 0; i < poll.questions.length; i++) {
+      const q = poll.questions[i];
+      const answer = answers[i];
+      
+      if (!answer || !answer.trim()) {
+        setError(`Please answer question ${i + 1}`);
+        setCurrentQuestion(i);
+        return;
+      }
 
-    if (poll.type === 'one-word' && !oneWordAnswer.trim()) {
-      setError('Please enter your answer');
-      return;
-    }
-
-    if (poll.type === 'one-word' && oneWordAnswer.trim().split(' ').length > 3) {
-      setError('Please keep your answer to 3 words or less');
-      return;
+      if (q.type === 'one-word' && answer.trim().split(' ').length > 5) {
+        setError(`Question ${i + 1}: Please keep your answer to 5 words or less`);
+        setCurrentQuestion(i);
+        return;
+      }
     }
 
     setSubmitting(true);
 
-    const answer = poll.type === 'multiple-choice' ? selectedOption : oneWordAnswer.trim();
-    
-    socket.emit('submit-vote', {
+    // Format answers for submission
+    const formattedAnswers = Object.entries(answers).map(([index, value]) => ({
+      questionIndex: parseInt(index),
+      value: value.trim()
+    }));
+
+    socket.emit('submit-votes', {
       pollId,
       userId,
-      answer
+      answers: formattedAnswers
     });
   };
 
@@ -132,6 +159,11 @@ const Poll = () => {
     navigator.clipboard.writeText(link).then(() => {
       alert('Poll link copied to clipboard!');
     });
+  };
+
+  const getProgress = () => {
+    const answered = Object.values(answers).filter(a => a && a.trim()).length;
+    return Math.round((answered / poll.questions.length) * 100);
   };
 
   if (loading) {
@@ -153,19 +185,18 @@ const Poll = () => {
     );
   }
 
+  const currentQ = poll.questions[currentQuestion];
+
   return (
     <div className="poll-page fade-in">
       {showConfetti && <Confetti recycle={false} numberOfPieces={500} />}
       
       <div className="poll-container">
         <div className="poll-header card">
-          <h1 className="poll-question">{poll.question}</h1>
+          <h1 className="poll-title">{poll.title}</h1>
           <div className="poll-meta">
-            <span className="poll-type-badge">
-              {poll.type === 'multiple-choice' ? '✓ Multiple Choice' : '💬 Open Response'}
-            </span>
-            <span className="poll-votes">
-              👥 {results?.totalVotes || 0} {results?.totalVotes === 1 ? 'response' : 'responses'}
+            <span className="poll-questions-count">
+              📝 {poll.questions.length} {poll.questions.length === 1 ? 'question' : 'questions'}
             </span>
           </div>
           <button className="btn-share" onClick={copyPollLink} title="Copy poll link">
@@ -175,25 +206,45 @@ const Poll = () => {
 
         {!hasVoted ? (
           <div className="voting-section card">
-            <h2 className="section-title">Cast Your Vote</h2>
-            
+            {/* Progress Bar */}
+            <div className="progress-indicator">
+              <div className="progress-bar-container">
+                <div 
+                  className="progress-bar-fill" 
+                  style={{ width: `${getProgress()}%` }}
+                ></div>
+              </div>
+              <span className="progress-text">
+                Question {currentQuestion + 1} of {poll.questions.length}
+              </span>
+            </div>
+
             {error && (
               <div className="error-message">
                 ⚠️ {error}
               </div>
             )}
 
-            <form onSubmit={handleVote} className="vote-form">
-              {poll.type === 'multiple-choice' ? (
+            {/* Question Card */}
+            <div className="question-display">
+              <div className="question-badge">
+                {currentQ.type === 'multiple-choice' ? '✓ Multiple Choice' : '💬 Open Response'}
+              </div>
+              <h2 className="current-question">{currentQ.question}</h2>
+
+              {currentQ.type === 'multiple-choice' ? (
                 <div className="options-container">
-                  {poll.options.map((option, index) => (
-                    <label key={index} className={`option-card ${selectedOption === option ? 'selected' : ''}`}>
+                  {currentQ.options.map((option, index) => (
+                    <label 
+                      key={index} 
+                      className={`option-card ${answers[currentQuestion] === option ? 'selected' : ''}`}
+                    >
                       <input
                         type="radio"
-                        name="option"
+                        name={`question-${currentQuestion}`}
                         value={option}
-                        checked={selectedOption === option}
-                        onChange={(e) => setSelectedOption(e.target.value)}
+                        checked={answers[currentQuestion] === option}
+                        onChange={(e) => handleAnswerChange(currentQuestion, e.target.value)}
                         className="option-radio"
                       />
                       <span className="option-text">{option}</span>
@@ -206,44 +257,71 @@ const Poll = () => {
                   <input
                     type="text"
                     className="input-field input-large"
-                    placeholder="Type your answer (1-3 words)..."
-                    value={oneWordAnswer}
-                    onChange={(e) => setOneWordAnswer(e.target.value)}
-                    maxLength={50}
+                    placeholder="Type your answer (max 5 words)..."
+                    value={answers[currentQuestion] || ''}
+                    onChange={(e) => handleAnswerChange(currentQuestion, e.target.value)}
+                    maxLength={100}
                   />
                 </div>
               )}
+            </div>
 
+            {/* Navigation */}
+            <div className="question-navigation">
               <button
-                type="submit"
-                className="btn btn-primary btn-large"
-                disabled={submitting}
+                type="button"
+                className="btn btn-secondary"
+                onClick={handlePrevious}
+                disabled={currentQuestion === 0}
               >
-                {submitting ? (
-                  <>
-                    <span className="spinner" style={{ width: '20px', height: '20px', borderWidth: '3px' }}></span>
-                    Submitting...
-                  </>
-                ) : (
-                  <>🚀 Submit Vote</>
-                )}
+                ← Previous
               </button>
-            </form>
+
+              {/* Question Dots */}
+              <div className="question-dots">
+                {poll.questions.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`dot ${index === currentQuestion ? 'active' : ''} ${answers[index] && answers[index].trim() ? 'answered' : ''}`}
+                    onClick={() => setCurrentQuestion(index)}
+                    title={`Question ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              {currentQuestion < poll.questions.length - 1 ? (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleNext}
+                >
+                  Next →
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <>
+                      <span className="spinner" style={{ width: '20px', height: '20px', borderWidth: '3px' }}></span>
+                      Submitting...
+                    </>
+                  ) : (
+                    <>🚀 Submit All</>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         ) : (
-          <div className="success-message">
-            ✓ Thank you for voting! Watch the results update in real-time below.
-          </div>
-        )}
-
-        {results && (
-          <div className="results-section card">
-            <h2 className="section-title">Live Results</h2>
-            {poll.type === 'multiple-choice' ? (
-              <MultipleChoiceResults results={results.results} totalVotes={results.totalVotes} />
-            ) : (
-              <OneWordResults results={results.results} />
-            )}
+          <div className="success-screen card">
+            <div className="success-icon">🎉</div>
+            <h2>Thank You!</h2>
+            <p className="success-text">Your responses have been submitted successfully.</p>
+            <p className="success-subtext">The poll admin can see all responses in real-time.</p>
           </div>
         )}
       </div>
