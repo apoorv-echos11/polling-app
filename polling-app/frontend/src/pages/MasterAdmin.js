@@ -89,6 +89,27 @@ const MasterAdmin = () => {
     navigator.clipboard.writeText(text);
   };
 
+  const handleActivatePoll = async (pollId) => {
+    if (!window.confirm('⚠️ Activate this poll? This will deactivate all other polls.')) {
+      return;
+    }
+
+    try {
+      const pwd = localStorage.getItem('adminPassword');
+      await axios.post(`${API_URL}/api/polls/${pollId}/activate`, { adminPassword: pwd });
+      
+      // Update local state - set all polls inactive except this one
+      setPolls(polls.map(p => ({
+        ...p,
+        active: p.id === pollId
+      })));
+      
+      alert('✅ Poll activated successfully!');
+    } catch (err) {
+      setError('Failed to activate poll: ' + (err.response?.data?.error || 'Unknown error'));
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
@@ -217,6 +238,14 @@ const MasterAdmin = () => {
                     </div>
                   </div>
                   <div className="poll-actions">
+                    {!poll.active && (
+                      <button
+                        className="btn btn-small btn-success"
+                        onClick={() => handleActivatePoll(poll.id)}
+                      >
+                        ✅ Activate
+                      </button>
+                    )}
                     <button
                       className="btn btn-small btn-secondary"
                       onClick={() => setExpandedPoll(expandedPoll === poll.id ? null : poll.id)}

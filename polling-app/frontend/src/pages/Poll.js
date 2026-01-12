@@ -94,7 +94,11 @@ const Poll = () => {
       
       setLoading(false);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load poll');
+      if (err.response?.data?.inactive) {
+        setError('This poll is no longer active. Please contact the poll administrator.');
+      } else {
+        setError(err.response?.data?.error || 'Failed to load poll');
+      }
       setLoading(false);
     }
   };

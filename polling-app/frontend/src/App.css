@@ -179,6 +179,15 @@ body {
   color: var(--echos-white);
 }
 
+.btn-success {
+  background: #22c55e;
+  color: var(--echos-white);
+}
+
+.btn-success:hover {
+  background: #16a34a;
+}
+
 .btn-dark {
   background: var(--echos-dark-card);
   color: var(--echos-white);

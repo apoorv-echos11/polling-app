@@ -130,6 +130,28 @@ app.post('/api/polls', async (req, res) => {
       totalVotes: 0
     }));
 
+    // Deactivate all existing polls
+    for (const [existingPollId, existingPoll] of polls.entries()) {
+      if (existingPoll.active) {
+        existingPoll.active = false;
+        polls.set(existingPollId, existingPoll);
+        await redisClient.set(getPollKey(existingPollId), JSON.stringify(existingPoll));
+      }
+    }
+
+    // Also deactivate polls in Redis that might not be in memory
+    const pollKeys = await redisClient.keys('poll:*');
+    for (const key of pollKeys) {
+      const pollData = await redisClient.get(key);
+      if (pollData) {
+        const existingPoll = JSON.parse(pollData);
+        if (existingPoll.active) {
+          existingPoll.active = false;
+          await redisClient.set(key, JSON.stringify(existingPoll));
+        }
+      }
+    }
+
     const poll = {
       id: pollId,
       adminToken,
@@ -144,6 +166,8 @@ app.post('/api/polls', async (req, res) => {
     
     // Store in Redis
     await redisClient.set(getPollKey(pollId), JSON.stringify(poll));
+
+    console.log(`📊 New active poll created: ${pollId} (${title}). All other polls deactivated.`);
 
     res.status(201).json({ 
       pollId, 
@@ -175,6 +199,11 @@ app.get('/api/polls/:pollId', async (req, res) => {
 
     if (!poll) {
       return res.status(404).json({ error: 'Poll not found' });
+    }
+
+    // Check if poll is active
+    if (!poll.active) {
+      return res.status(403).json({ error: 'This poll is no longer active', inactive: true });
     }
 
     // Return poll without admin token
@@ -453,6 +482,73 @@ app.post('/api/polls/:pollId/clear-results', async (req, res) => {
   } catch (error) {
     console.error('Error clearing poll results:', error);
     res.status(500).json({ error: 'Failed to clear poll results' });
+  }
+});
+
+// Activate a poll (deactivates all others) - requires admin token or master password
+app.post('/api/polls/:pollId/activate', async (req, res) => {
+  try {
+    const { pollId } = req.params;
+    const { adminToken, adminPassword } = req.body;
+
+    // Get poll
+    let poll = polls.get(pollId);
+    if (!poll) {
+      const pollData = await redisClient.get(getPollKey(pollId));
+      if (pollData) {
+        poll = JSON.parse(pollData);
+        polls.set(pollId, poll);
+      }
+    }
+
+    if (!poll) {
+      return res.status(404).json({ error: 'Poll not found' });
+    }
+
+    // Verify authorization (either poll's admin token or master password)
+    if (poll.adminToken !== adminToken && adminPassword !== MASTER_ADMIN_PASSWORD) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    // Deactivate all other polls
+    for (const [existingPollId, existingPoll] of polls.entries()) {
+      if (existingPollId !== pollId && existingPoll.active) {
+        existingPoll.active = false;
+        polls.set(existingPollId, existingPoll);
+        await redisClient.set(getPollKey(existingPollId), JSON.stringify(existingPoll));
+      }
+    }
+
+    // Also check Redis for polls not in memory
+    const pollKeys = await redisClient.keys('poll:*');
+    for (const key of pollKeys) {
+      if (key !== getPollKey(pollId)) {
+        const pollData = await redisClient.get(key);
+        if (pollData) {
+          const existingPoll = JSON.parse(pollData);
+          if (existingPoll.active) {
+            existingPoll.active = false;
+            await redisClient.set(key, JSON.stringify(existingPoll));
+          }
+        }
+      }
+    }
+
+    // Activate this poll
+    poll.active = true;
+    polls.set(pollId, poll);
+    await redisClient.set(getPollKey(pollId), JSON.stringify(poll));
+
+    console.log(`✅ Poll activated: ${pollId} (${poll.title}). All other polls deactivated.`);
+
+    res.json({ 
+      success: true, 
+      message: 'Poll activated successfully',
+      poll
+    });
+  } catch (error) {
+    console.error('Error activating poll:', error);
+    res.status(500).json({ error: 'Failed to activate poll' });
   }
 });
 
