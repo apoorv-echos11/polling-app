@@ -7,7 +7,7 @@ const Header = () => {
       <div className="header-content">
         <Link to="/" className="logo">
           <img 
-            src="/echos-logo.png" 
+            src="/images/echos-logo.png" 
             alt="Echos" 
             className="logo-image"
           />
