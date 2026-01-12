@@ -378,6 +378,84 @@ app.delete('/api/admin/polls', async (req, res) => {
   }
 });
 
+// Clear poll results (reset votes to 0) - requires admin token
+app.post('/api/polls/:pollId/clear-results', async (req, res) => {
+  try {
+    const { pollId } = req.params;
+    const { adminToken } = req.body;
+
+    // Get poll
+    let poll = polls.get(pollId);
+    if (!poll) {
+      const pollData = await redisClient.get(getPollKey(pollId));
+      if (pollData) {
+        poll = JSON.parse(pollData);
+        polls.set(pollId, poll);
+      }
+    }
+
+    if (!poll) {
+      return res.status(404).json({ error: 'Poll not found' });
+    }
+
+    // Verify admin token
+    if (poll.adminToken !== adminToken) {
+      return res.status(403).json({ error: 'Invalid admin token' });
+    }
+
+    // Reset all question votes
+    poll.questions = poll.questions.map(q => ({
+      ...q,
+      votes: q.type === 'multiple-choice' 
+        ? q.options.reduce((acc, opt) => ({ ...acc, [opt]: 0 }), {})
+        : [],
+      totalVotes: 0
+    }));
+
+    // Reset total participants
+    poll.totalParticipants = 0;
+
+    // Save to memory and Redis
+    polls.set(pollId, poll);
+    await redisClient.set(getPollKey(pollId), JSON.stringify(poll));
+
+    // Delete all vote tracking keys for this poll
+    const voteKeys = await redisClient.keys(`vote:${pollId}:*`);
+    const pollVoteKeys = await redisClient.keys(`pollvote:${pollId}:*`);
+    
+    if (voteKeys.length > 0) {
+      await redisClient.del(voteKeys);
+    }
+    if (pollVoteKeys.length > 0) {
+      await redisClient.del(pollVoteKeys);
+    }
+
+    // Emit updated results to all connected clients
+    io.to(pollId).emit('results-update', {
+      results: poll.questions.map(q => ({
+        questionId: q.id,
+        question: q.question,
+        type: q.type,
+        options: q.options,
+        votes: q.votes,
+        totalVotes: q.totalVotes
+      })),
+      totalParticipants: 0
+    });
+
+    console.log(`🔄 Poll results cleared: ${pollId} (${poll.title})`);
+
+    res.json({ 
+      success: true, 
+      message: 'Poll results cleared successfully',
+      poll
+    });
+  } catch (error) {
+    console.error('Error clearing poll results:', error);
+    res.status(500).json({ error: 'Failed to clear poll results' });
+  }
+});
+
 // Update/Edit a poll (requires admin token)
 app.put('/api/polls/:pollId', async (req, res) => {
   try {

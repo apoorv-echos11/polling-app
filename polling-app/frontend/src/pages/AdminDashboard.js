@@ -84,6 +84,22 @@ const AdminDashboard = () => {
     });
   };
 
+  const clearResults = async () => {
+    if (!window.confirm('⚠️ Are you sure you want to clear all results? This will reset all votes to 0.')) {
+      return;
+    }
+    if (!window.confirm('⚠️ FINAL WARNING: This action cannot be undone. All votes will be lost. Continue?')) {
+      return;
+    }
+
+    try {
+      await axios.post(`${API_URL}/api/polls/${pollId}/clear-results`, { adminToken });
+      alert('✅ Results cleared successfully!');
+    } catch (err) {
+      alert('Failed to clear results: ' + (err.response?.data?.error || 'Unknown error'));
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading">
@@ -142,6 +158,9 @@ const AdminDashboard = () => {
             </button>
             <button className="btn btn-secondary" onClick={copyAdminLink}>
               🔗 Copy Admin Link
+            </button>
+            <button className="btn btn-danger" onClick={clearResults}>
+              🔄 Clear Results
             </button>
           </div>
         </div>
