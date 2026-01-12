@@ -194,14 +194,6 @@ const Poll = () => {
       <div className="poll-container">
         <div className="poll-header card">
           <h1 className="poll-title">{poll.title}</h1>
-          <div className="poll-meta">
-            <span className="poll-questions-count">
-              📝 {poll.questions.length} {poll.questions.length === 1 ? 'question' : 'questions'}
-            </span>
-          </div>
-          <button className="btn-share" onClick={copyPollLink} title="Copy poll link">
-            📋 Share Poll
-          </button>
         </div>
 
         {!hasVoted ? (
@@ -227,9 +219,6 @@ const Poll = () => {
 
             {/* Question Card */}
             <div className="question-display">
-              <div className="question-badge">
-                {currentQ.type === 'multiple-choice' ? '✓ Multiple Choice' : '💬 Open Response'}
-              </div>
               <h2 className="current-question">{currentQ.question}</h2>
 
               {currentQ.type === 'multiple-choice' ? (
