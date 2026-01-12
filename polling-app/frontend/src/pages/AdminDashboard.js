@@ -85,10 +85,7 @@ const AdminDashboard = () => {
   };
 
   const clearResults = async () => {
-    if (!window.confirm('⚠️ Are you sure you want to clear all results? This will reset all votes to 0.')) {
-      return;
-    }
-    if (!window.confirm('⚠️ FINAL WARNING: This action cannot be undone. All votes will be lost. Continue?')) {
+    if (!window.confirm('⚠️ Clear all results? This will reset all votes to 0 and cannot be undone.')) {
       return;
     }
 
