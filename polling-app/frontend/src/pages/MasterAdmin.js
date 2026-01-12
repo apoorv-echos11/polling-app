@@ -131,10 +131,6 @@ const MasterAdmin = () => {
               {loading ? 'Verifying...' : '🔓 Access Admin Panel'}
             </button>
           </form>
-
-          <div className="login-hint">
-            <p>Default password: <code>echos2024</code></p>
-          </div>
         </div>
       </div>
     );

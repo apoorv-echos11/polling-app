@@ -82,7 +82,7 @@ const getPollKey = (pollId) => `poll:${pollId}`;
 const getVoteKey = (pollId, questionIndex, userId) => `vote:${pollId}:${questionIndex}:${userId}`;
 
 // Master Admin Password (change this in production!)
-const MASTER_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'echos2024';
+const MASTER_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'echos2026';
 
 // API Routes
 
