@@ -315,6 +315,18 @@ const Poll = () => {
             <h2>Thank You!</h2>
             <p className="success-text">Your responses have been submitted successfully.</p>
             <p className="success-subtext">The poll admin can see all responses in real-time.</p>
+            
+            <div className="explore-section">
+              <p className="explore-text">Want to learn more about what we do?</p>
+              <a 
+                href="https://echo-s.ai/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+              >
+                🌐 Explore Echos
+              </a>
+            </div>
           </div>
         )}
       </div>

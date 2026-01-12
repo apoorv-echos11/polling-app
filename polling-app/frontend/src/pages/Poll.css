@@ -322,6 +322,31 @@
     width: 100%;
     margin-top: 1rem;
   }
+}
+
+/* Explore Echos Section */
+.explore-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--echos-dark-lighter);
+  text-align: center;
+}
+
+.explore-text {
+  color: var(--echos-text-light);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.explore-section .btn {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .explore-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
 
   .current-question {
     font-size: 1.25rem;
