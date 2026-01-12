@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import CreatePoll from './pages/CreatePoll';
 import Poll from './pages/Poll';
+import Vote from './pages/Vote';
 import AdminDashboard from './pages/AdminDashboard';
 import MasterAdmin from './pages/MasterAdmin';
 import EditPoll from './pages/EditPoll';
@@ -18,6 +19,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<CreatePoll />} />
+            <Route path="/vote" element={<Vote />} />
             <Route path="/poll/:pollId" element={<Poll />} />
             <Route path="/poll/:pollId/admin/:adminToken" element={<AdminDashboard />} />
             <Route path="/poll/:pollId/edit/:adminToken" element={<EditPoll />} />

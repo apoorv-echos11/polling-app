@@ -71,7 +71,7 @@ const AdminDashboard = () => {
   };
 
   const copyVoterLink = () => {
-    const link = `${window.location.origin}/poll/${pollId}`;
+    const link = `${window.location.origin}/vote`;
     navigator.clipboard.writeText(link).then(() => {
       alert('Voter link copied to clipboard!');
     });
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
           <div className="qr-code-box">
             <div className="qr-code-wrapper">
               <QRCodeSVG 
-                value={`${window.location.origin}/poll/${pollId}`}
+                value={`${window.location.origin}/vote`}
                 size={120}
                 bgColor="#1B2838"
                 fgColor="#8B9A6D"

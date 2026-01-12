@@ -91,6 +91,36 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
+// Get the currently active poll
+app.get('/api/active-poll', async (req, res) => {
+  try {
+    // Check memory first
+    for (const [pollId, poll] of polls.entries()) {
+      if (poll.active) {
+        return res.json({ pollId, title: poll.title });
+      }
+    }
+
+    // Check Redis for active poll
+    const pollKeys = await redisClient.keys('poll:*');
+    for (const key of pollKeys) {
+      const pollData = await redisClient.get(key);
+      if (pollData) {
+        const poll = JSON.parse(pollData);
+        if (poll.active) {
+          polls.set(poll.id, poll);
+          return res.json({ pollId: poll.id, title: poll.title });
+        }
+      }
+    }
+
+    return res.status(404).json({ error: 'No active poll found' });
+  } catch (error) {
+    console.error('Error getting active poll:', error);
+    res.status(500).json({ error: 'Failed to get active poll' });
+  }
+});
+
 // Create a new poll with multiple questions
 app.post('/api/polls', async (req, res) => {
   try {
