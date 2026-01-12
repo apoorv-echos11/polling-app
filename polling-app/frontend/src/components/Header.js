@@ -16,7 +16,6 @@ const Header = () => {
             alt="Echos" 
             className="logo-image"
           />
-          <span className="logo-text">Polling</span>
         </Link>
         {!isVoterPage && (
           <div className="header-nav">
