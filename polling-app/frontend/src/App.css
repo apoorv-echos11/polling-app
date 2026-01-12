@@ -77,12 +77,9 @@ body {
 }
 
 .logo-image {
-  height: 36px;
+  height: 40px;
   width: auto;
   object-fit: contain;
-  background: #ffffff;
-  padding: 6px 10px;
-  border-radius: 8px;
 }
 
 .logo-text {
