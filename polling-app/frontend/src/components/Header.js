@@ -22,9 +22,6 @@ const Header = () => {
             <Link to="/admin" className="btn btn-outline">
               🔐 Admin
             </Link>
-            <Link to="/create" className="btn btn-secondary">
-              + Create Poll
-            </Link>
           </div>
         )}
       </div>
