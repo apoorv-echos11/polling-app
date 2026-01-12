@@ -4,7 +4,7 @@ import './MultipleChoiceResults.css';
 const MultipleChoiceResults = ({ results, totalVotes }) => {
   const options = Object.keys(results);
   const votes = Object.values(results);
-  const percentages = votes.map(v => totalVotes > 0 ? ((v / totalVotes) * 100).toFixed(1) : 0);
+  const percentages = votes.map(v => totalVotes > 0 ? Math.round((v / totalVotes) * 100) : 0);
 
   return (
     <div className="multiple-choice-results">
