@@ -339,8 +339,8 @@
 }
 
 .explore-subtext {
-  color: var(--echos-text);
-  margin-bottom: 0.25rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
   font-size: 0.95rem;
 }
 
