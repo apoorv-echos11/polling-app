@@ -295,7 +295,7 @@ const MasterAdmin = () => {
                       <div className="qr-links-row">
                         <div className="qr-mini-box">
                           <QRCodeSVG 
-                            value={`${window.location.origin}/poll/${poll.id}`}
+                            value={`${window.location.origin}/vote`}
                             size={100}
                             bgColor="#0D1B2A"
                             fgColor="#8B9A6D"
@@ -307,10 +307,10 @@ const MasterAdmin = () => {
                         <div className="links-list">
                           <div className="link-item">
                             <span className="link-label">Voter Link:</span>
-                            <code>{window.location.origin}/poll/{poll.id}</code>
+                            <code>{window.location.origin}/vote</code>
                             <button 
                               className="btn btn-tiny"
-                              onClick={() => copyToClipboard(`${window.location.origin}/poll/${poll.id}`)}
+                              onClick={() => copyToClipboard(`${window.location.origin}/vote`)}
                             >
                               📋
                             </button>
