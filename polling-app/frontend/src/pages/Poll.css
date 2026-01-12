@@ -334,8 +334,29 @@
 
 .explore-text {
   color: var(--echos-text-light);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   font-size: 1rem;
+}
+
+.explore-subtext {
+  color: var(--echos-text);
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.explore-link {
+  color: var(--echos-primary);
+  font-size: 1rem;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.explore-link:hover {
+  color: var(--echos-primary-light);
+  text-decoration: underline;
 }
 
 .explore-logo-link {

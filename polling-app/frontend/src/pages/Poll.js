@@ -318,6 +318,15 @@ const Poll = () => {
             
             <div className="explore-section">
               <p className="explore-text">Want to learn more about what we do?</p>
+              <p className="explore-subtext">Checkout our website</p>
+              <a 
+                href="https://echo-s.ai/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="explore-link"
+              >
+                echo-s.ai
+              </a>
               <a 
                 href="https://echo-s.ai/" 
                 target="_blank" 
