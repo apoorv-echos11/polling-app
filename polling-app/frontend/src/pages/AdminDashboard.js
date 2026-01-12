@@ -197,9 +197,6 @@ const AdminDashboard = () => {
           <div className="results-panel card">
             <div className="results-header">
               <div className="results-question-info">
-                <span className="results-question-badge">
-                  {currentResult.type === 'multiple-choice' ? '✓ Multiple Choice' : '💬 Open Response'}
-                </span>
                 <h2 className="results-question">{currentResult.question}</h2>
               </div>
               <div className="results-votes-count">
