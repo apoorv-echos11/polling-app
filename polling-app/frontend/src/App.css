@@ -76,6 +76,12 @@ body {
   box-shadow: 0 2px 8px rgba(139, 154, 109, 0.3);
 }
 
+.logo-image {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
 .logo-text {
   font-size: 24px;
   font-weight: 600;

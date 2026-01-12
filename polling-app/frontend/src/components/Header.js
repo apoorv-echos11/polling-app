@@ -6,8 +6,12 @@ const Header = () => {
     <header className="app-header">
       <div className="header-content">
         <Link to="/" className="logo">
-          <div className="logo-icon">E</div>
-          <span className="logo-text">echos Polling</span>
+          <img 
+            src="/echos-logo.png" 
+            alt="Echos" 
+            className="logo-image"
+          />
+          <span className="logo-text">Polling</span>
         </Link>
         <div className="header-nav">
           <Link to="/admin" className="btn btn-outline">
