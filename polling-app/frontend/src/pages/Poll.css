@@ -338,8 +338,20 @@
   font-size: 1rem;
 }
 
-.explore-section .btn {
-  margin-top: 0.5rem;
+.explore-logo-link {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.explore-logo-link:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.explore-logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
 }
 
 @media (max-width: 768px) {

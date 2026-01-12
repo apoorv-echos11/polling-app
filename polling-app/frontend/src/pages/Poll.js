@@ -322,9 +322,13 @@ const Poll = () => {
                 href="https://echo-s.ai/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="btn btn-primary"
+                className="explore-logo-link"
               >
-                🌐 Explore Echos
+                <img 
+                  src="/images/echos-logo-white.png" 
+                  alt="Echos" 
+                  className="explore-logo"
+                />
               </a>
             </div>
           </div>
