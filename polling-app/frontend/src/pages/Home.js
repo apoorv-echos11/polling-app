@@ -21,25 +21,12 @@ const Home = () => {
             Real-time Polling Made Simple
           </h1>
           <p className="hero-subtitle">
-            Create engaging polls and get instant feedback from hundreds of participants simultaneously
+            Join polls and provide instant feedback with hundreds of participants simultaneously
           </p>
-          
-          <div className="hero-actions">
-            <button 
-              className="btn btn-primary btn-large"
-              onClick={() => navigate('/create')}
-            >
-              Create New Poll →
-            </button>
-          </div>
-
-          <div className="divider">
-            <span>or</span>
-          </div>
 
           <form onSubmit={handleJoinPoll} className="join-poll-form">
             <div className="input-group">
-              <label className="input-label input-label-dark">Join an Existing Poll</label>
+              <label className="input-label input-label-dark">Join a Poll</label>
               <div className="input-with-button">
                 <input
                   type="text"
