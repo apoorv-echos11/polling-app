@@ -235,6 +235,9 @@ const Poll = () => {
             {/* Question Card */}
             <div className="question-display">
               <h2 className="current-question">{currentQ.question}</h2>
+              {currentQ.type === 'multi-select' && (
+                <p style={{ fontSize: '0.85rem', color: 'var(--echos-text-light)', marginBottom: '0.75rem', marginTop: '-0.25rem' }}>Select all that apply</p>
+              )}
 
               {currentQ.type === 'multiple-choice' ? (
                 <div className="options-container">
@@ -258,7 +261,6 @@ const Poll = () => {
                 </div>
               ) : currentQ.type === 'multi-select' ? (
                 <div className="options-container">
-                  <p className="multi-select-hint" style={{ fontSize: '0.85rem', color: 'var(--echos-text-light)', marginBottom: '0.75rem' }}>Select all that apply</p>
                   {currentQ.options.map((option, index) => {
                     const selected = Array.isArray(answers[currentQuestion]) && answers[currentQuestion].includes(option);
                     return (
