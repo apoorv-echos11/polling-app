@@ -51,7 +51,7 @@ const Poll = () => {
       // Initialize answers object for all questions
       const initialAnswers = {};
       pollData.questions.forEach((q, index) => {
-        initialAnswers[index] = '';
+        initialAnswers[index] = q.type === 'multi-select' ? [] : '';
       });
       setAnswers(initialAnswers);
       setLoading(false);
@@ -88,7 +88,7 @@ const Poll = () => {
       // Initialize answers
       const initialAnswers = {};
       response.data.poll.questions.forEach((q, index) => {
-        initialAnswers[index] = '';
+        initialAnswers[index] = q.type === 'multi-select' ? [] : '';
       });
       setAnswers(initialAnswers);
       
@@ -108,6 +108,16 @@ const Poll = () => {
       ...prev,
       [questionIndex]: value
     }));
+  };
+
+  const handleMultiSelectChange = (questionIndex, option) => {
+    setAnswers(prev => {
+      const current = Array.isArray(prev[questionIndex]) ? prev[questionIndex] : [];
+      const updated = current.includes(option)
+        ? current.filter(o => o !== option)
+        : [...current, option];
+      return { ...prev, [questionIndex]: updated };
+    });
   };
 
   const handleNext = () => {
@@ -130,7 +140,8 @@ const Poll = () => {
       const q = poll.questions[i];
       const answer = answers[i];
       
-      if (!answer || !answer.trim()) {
+      const isEmpty = Array.isArray(answer) ? answer.length === 0 : !answer || !answer.trim();
+      if (isEmpty) {
         setError(`Please answer question ${i + 1}`);
         setCurrentQuestion(i);
         return;
@@ -148,7 +159,7 @@ const Poll = () => {
     // Format answers for submission
     const formattedAnswers = Object.entries(answers).map(([index, value]) => ({
       questionIndex: parseInt(index),
-      value: value.trim()
+      value: Array.isArray(value) ? value : value.trim()
     }));
 
     socket.emit('submit-votes', {
@@ -166,7 +177,7 @@ const Poll = () => {
   };
 
   const getProgress = () => {
-    const answered = Object.values(answers).filter(a => a && a.trim()).length;
+    const answered = Object.values(answers).filter(a => Array.isArray(a) ? a.length > 0 : a && a.trim()).length;
     return Math.round((answered / poll.questions.length) * 100);
   };
 
@@ -228,8 +239,8 @@ const Poll = () => {
               {currentQ.type === 'multiple-choice' ? (
                 <div className="options-container">
                   {currentQ.options.map((option, index) => (
-                    <label 
-                      key={index} 
+                    <label
+                      key={index}
                       className={`option-card ${answers[currentQuestion] === option ? 'selected' : ''}`}
                     >
                       <input
@@ -244,6 +255,29 @@ const Poll = () => {
                       <span className="option-check">✓</span>
                     </label>
                   ))}
+                </div>
+              ) : currentQ.type === 'multi-select' ? (
+                <div className="options-container">
+                  <p className="multi-select-hint" style={{ fontSize: '0.85rem', color: 'var(--echos-text-light)', marginBottom: '0.75rem' }}>Select all that apply</p>
+                  {currentQ.options.map((option, index) => {
+                    const selected = Array.isArray(answers[currentQuestion]) && answers[currentQuestion].includes(option);
+                    return (
+                      <label
+                        key={index}
+                        className={`option-card ${selected ? 'selected' : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          value={option}
+                          checked={selected}
+                          onChange={() => handleMultiSelectChange(currentQuestion, option)}
+                          className="option-radio"
+                        />
+                        <span className="option-text">{option}</span>
+                        <span className="option-check">✓</span>
+                      </label>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="input-group">
@@ -275,7 +309,7 @@ const Poll = () => {
                 {poll.questions.map((_, index) => (
                   <button
                     key={index}
-                    className={`dot ${index === currentQuestion ? 'active' : ''} ${answers[index] && answers[index].trim() ? 'answered' : ''}`}
+                    className={`dot ${index === currentQuestion ? 'active' : ''} ${(Array.isArray(answers[index]) ? answers[index].length > 0 : !!(answers[index] && answers[index].trim())) ? 'answered' : ''}`}
                     onClick={() => setCurrentQuestion(index)}
                     title={`Question ${index + 1}`}
                   />

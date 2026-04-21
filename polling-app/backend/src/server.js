@@ -140,7 +140,7 @@ app.post('/api/polls', async (req, res) => {
       if (!q.question || !q.type) {
         return res.status(400).json({ error: `Question ${i + 1}: Question text and type are required` });
       }
-      if (q.type === 'multiple-choice' && (!q.options || q.options.length < 2)) {
+      if ((q.type === 'multiple-choice' || q.type === 'multi-select') && (!q.options || q.options.length < 2)) {
         return res.status(400).json({ error: `Question ${i + 1}: Multiple choice needs at least 2 options` });
       }
     }
@@ -153,9 +153,9 @@ app.post('/api/polls', async (req, res) => {
       id: index,
       question: q.question,
       type: q.type,
-      options: q.type === 'multiple-choice' ? q.options : null,
-      votes: q.type === 'multiple-choice' 
-        ? q.options.reduce((acc, opt) => ({ ...acc, [opt]: 0 }), {}) 
+      options: (q.type === 'multiple-choice' || q.type === 'multi-select') ? q.options : null,
+      votes: (q.type === 'multiple-choice' || q.type === 'multi-select')
+        ? q.options.reduce((acc, opt) => ({ ...acc, [opt]: 0 }), {})
         : [],
       totalVotes: 0
     }));
@@ -465,7 +465,7 @@ app.post('/api/polls/:pollId/clear-results', async (req, res) => {
     // Reset all question votes
     poll.questions = poll.questions.map(q => ({
       ...q,
-      votes: q.type === 'multiple-choice' 
+      votes: (q.type === 'multiple-choice' || q.type === 'multi-select')
         ? q.options.reduce((acc, opt) => ({ ...acc, [opt]: 0 }), {})
         : [],
       totalVotes: 0
@@ -622,7 +622,7 @@ app.put('/api/polls/:pollId', async (req, res) => {
       if (!q.question || !q.type) {
         return res.status(400).json({ error: `Question ${i + 1}: Question text and type are required` });
       }
-      if (q.type === 'multiple-choice' && (!q.options || q.options.length < 2)) {
+      if ((q.type === 'multiple-choice' || q.type === 'multi-select') && (!q.options || q.options.length < 2)) {
         return res.status(400).json({ error: `Question ${i + 1}: Multiple choice needs at least 2 options` });
       }
     }
@@ -630,7 +630,7 @@ app.put('/api/polls/:pollId', async (req, res) => {
     // Update poll - preserve votes where possible, reset where structure changed
     const updatedQuestions = questions.map((q, index) => {
       const existingQuestion = poll.questions[index];
-      
+
       // If question type changed or options changed significantly, reset votes
       if (!existingQuestion || existingQuestion.type !== q.type) {
         // New question or type changed - initialize fresh
@@ -638,16 +638,16 @@ app.put('/api/polls/:pollId', async (req, res) => {
           id: index,
           question: q.question,
           type: q.type,
-          options: q.type === 'multiple-choice' ? q.options : null,
-          votes: q.type === 'multiple-choice' 
-            ? q.options.reduce((acc, opt) => ({ ...acc, [opt]: 0 }), {}) 
+          options: (q.type === 'multiple-choice' || q.type === 'multi-select') ? q.options : null,
+          votes: (q.type === 'multiple-choice' || q.type === 'multi-select')
+            ? q.options.reduce((acc, opt) => ({ ...acc, [opt]: 0 }), {})
             : [],
           totalVotes: 0
         };
       }
-      
+
       // Same type - try to preserve votes
-      if (q.type === 'multiple-choice') {
+      if (q.type === 'multiple-choice' || q.type === 'multi-select') {
         // Preserve votes for options that still exist
         const newVotes = {};
         q.options.forEach(opt => {
@@ -854,6 +854,14 @@ io.on('connection', (socket) => {
             question.votes[value]++;
             question.totalVotes++;
           }
+        } else if (question.type === 'multi-select') {
+          const selected = Array.isArray(value) ? value : [value];
+          for (const opt of selected) {
+            if (question.votes.hasOwnProperty(opt)) {
+              question.votes[opt]++;
+            }
+          }
+          question.totalVotes++;
         } else if (question.type === 'one-word') {
           // Filter profanity
           const cleanAnswer = filter.isProfane(value) ? '***' : value;

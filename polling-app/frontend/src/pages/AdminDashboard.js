@@ -71,7 +71,7 @@ const AdminDashboard = () => {
   };
 
   const copyVoterLink = () => {
-    const link = `${window.location.origin}/vote`;
+    const link = `${window.location.origin}/poll/${pollId}`;
     navigator.clipboard.writeText(link).then(() => {
       alert('Voter link copied to clipboard!');
     });
@@ -171,8 +171,8 @@ const AdminDashboard = () => {
           
           <div className="qr-code-box">
             <div className="qr-code-wrapper">
-              <QRCodeSVG 
-                value={`${window.location.origin}/vote`}
+              <QRCodeSVG
+                value={`${window.location.origin}/poll/${pollId}`}
                 size={120}
                 bgColor="#1B2838"
                 fgColor="#8B9A6D"
@@ -202,7 +202,7 @@ const AdminDashboard = () => {
             >
               <span className="tab-number">Q{index + 1}</span>
               <span className="tab-type">
-                {q.type === 'multiple-choice' ? '✓' : '💬'}
+                {q.type === 'multiple-choice' ? '✓' : q.type === 'multi-select' ? '☑' : '💬'}
               </span>
             </button>
           ))}
@@ -222,10 +222,10 @@ const AdminDashboard = () => {
             </div>
 
             <div className="results-content">
-              {currentResult.type === 'multiple-choice' ? (
-                <MultipleChoiceResults 
-                  results={currentResult.votes} 
-                  totalVotes={currentResult.totalVotes} 
+              {(currentResult.type === 'multiple-choice' || currentResult.type === 'multi-select') ? (
+                <MultipleChoiceResults
+                  results={currentResult.votes}
+                  totalVotes={currentResult.totalVotes}
                 />
               ) : (
                 <OneWordResults results={currentResult.votes} />
@@ -247,7 +247,7 @@ const AdminDashboard = () => {
                 <div className="overview-card-header">
                   <span className="overview-number">Q{index + 1}</span>
                   <span className="overview-type">
-                    {result.type === 'multiple-choice' ? '✓' : '💬'}
+                    {result.type === 'multiple-choice' ? '✓' : result.type === 'multi-select' ? '☑' : '💬'}
                   </span>
                 </div>
                 <p className="overview-question">{result.question}</p>
