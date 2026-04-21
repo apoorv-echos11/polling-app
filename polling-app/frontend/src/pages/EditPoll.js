@@ -48,6 +48,8 @@ const EditPoll = () => {
       newQuestions[index].options = [];
     } else if (field === 'type' && value === 'multiple-choice') {
       newQuestions[index].options = ['', ''];
+    } else if (field === 'type' && value === 'multi-select') {
+      newQuestions[index].options = ['', ''];
     }
     
     setQuestions(newQuestions);
@@ -144,7 +146,7 @@ const EditPoll = () => {
         setError(`Question ${i + 1}: Please enter a question`);
         return;
       }
-      if (q.type === 'multiple-choice') {
+      if (q.type === 'multiple-choice' || q.type === 'multi-select') {
         const validOptions = q.options.filter(opt => opt.trim());
         if (validOptions.length < 2) {
           setError(`Question ${i + 1}: Please provide at least 2 options`);
@@ -159,7 +161,7 @@ const EditPoll = () => {
       const cleanedQuestions = questions.map(q => ({
         question: q.question.trim(),
         type: q.type,
-        options: q.type === 'multiple-choice' ? q.options.filter(opt => opt.trim()) : null
+        options: (q.type === 'multiple-choice' || q.type === 'multi-select') ? q.options.filter(opt => opt.trim()) : null
       }));
 
       await axios.put(`${API_URL}/api/polls/${pollId}`, {
@@ -316,6 +318,14 @@ const EditPoll = () => {
                       </button>
                       <button
                         type="button"
+                        className={`poll-type-btn compact ${q.type === 'multi-select' ? 'active' : ''}`}
+                        onClick={() => handleQuestionChange(qIndex, 'type', 'multi-select')}
+                      >
+                        <span className="type-icon">☑</span>
+                        <span className="type-title">Multi-Select</span>
+                      </button>
+                      <button
+                        type="button"
                         className={`poll-type-btn compact ${q.type === 'one-word' ? 'active' : ''}`}
                         onClick={() => handleQuestionChange(qIndex, 'type', 'one-word')}
                       >
@@ -325,8 +335,8 @@ const EditPoll = () => {
                     </div>
                   </div>
 
-                  {/* Options for Multiple Choice */}
-                  {q.type === 'multiple-choice' && (
+                  {/* Options for Multiple Choice and Multi-Select */}
+                  {(q.type === 'multiple-choice' || q.type === 'multi-select') && (
                     <div className="input-group">
                       <label className="input-label input-label-small">Answer Options</label>
                       <div className="options-list">
